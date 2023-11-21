@@ -24,12 +24,10 @@ const port = 3000;
 
 app.use(express.json());
 
-const allowedOrigins = [
-  '*'
-];
+const allowedOrigins = ['*'];
 
 app.use(cors({
-  origin: allowedOrigins,
+  origin: allowedOrigins[0], // Accessing the first element of the allowedOrigins array
 }));
 
 // Set up Multer to store files in the 'Assets' folder
