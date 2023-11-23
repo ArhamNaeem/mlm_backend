@@ -30,16 +30,6 @@ app.use(cors({
   origin: allowedOrigins[0], // Accessing the first element of the allowedOrigins array
 }));
 
-
-const path = require('path');
-// Serve static files (CSS, JS, images) from the 'build' directory
-app.use(express.static(path.join(__dirname, 'build')));
-
-// Serve the main HTML file for any other requests
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
-})
-
 // Set up Multer to store files in the 'Assets' folder
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
