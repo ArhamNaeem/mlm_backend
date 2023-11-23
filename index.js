@@ -29,6 +29,12 @@ const allowedOrigins = ['*'];
 app.use(cors({
   origin: allowedOrigins[0], // Accessing the first element of the allowedOrigins array
 }));
+app.use(express.static(path.join(__dirname, 'client/build')));
+
+// Serve React app for all other routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+});
 
 // Set up Multer to store files in the 'Assets' folder
 const storage = multer.diskStorage({
