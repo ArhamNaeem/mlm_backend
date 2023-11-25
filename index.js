@@ -29,28 +29,36 @@ const allowedOrigins = ['*'];
 app.use(cors({
   origin: allowedOrigins[0], // Accessing the first element of the allowedOrigins array
 }));
-app.use(express.static(path.join(__dirname, 'client/build')));
+// app.use(express.static(path.join(__dirname, 'client/build')));
 
-// Serve React app for all other routes
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
-});
+// // Serve React app for all other routes
+// app.get('*', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+// });
 
-// Set up Multer to store files in the 'Assets' folder
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'Assets'); // Destination folder
   },
   filename: (req, file, cb) => {
-    cb(null, file.originalname);
+    const timestamp = Date.now();
+    cb(null, `${timestamp}-${file.originalname}`);
   }
 });
 
 const upload = multer({ storage });
 
-// Define a route to handle file uploads
-app.post('/upload', upload.single('file'), (req, res) => {
-  res.send('File uploaded successfully');
+// Define a route to handle multiple file uploads
+app.post('/member/:id/upload', upload.array('files', 1), (req, res) => {
+  const memberID = req.params.id;
+  // Get the file paths of the uploaded images
+  // const filePaths = req.files.map(file => file.path);
+  const profilePicturePath = req.files[0].path.replace(/\\/g, '/'); // Get the path of the first file
+  membersModel.update({ ProfilePicture: profilePicturePath }, { where: { MemberID: memberID } })
+          .then(() => res.status(200).json({ message: 'Profile picture updated successfully' }))
+          .catch(error => res.status(500).json({ message: 'Database update failed', error }));
+  // Send the file paths in the response
+  // res.json({ message: 'Files uploaded successfully', paths: filePaths });
 });
 
 // Define routes
